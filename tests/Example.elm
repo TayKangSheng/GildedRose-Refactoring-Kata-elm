@@ -16,18 +16,22 @@ endOfDay itemList =
       (\item ->
         let
           qualityMultiplier =
-            if item.name == "Aged Brie" then
+            if item.name == "Aged Brie" || item.name == "Backstage passes" then
               -1
             else
               1
           qualityMinus =
-            if item.sellIn <= 0 then
+            if (item.sellIn <= 5 && item.name == "Backstage passes") then
+              3
+            else if item.sellIn <= 0 || (item.sellIn <= 10 && item.name == "Backstage passes") then
               2
             else
               1
           newQuality =
             if item.name == "Sulfuras" then
               80
+            else if (item.sellIn <= 0 && item.name == "Backstage passes") then
+              0
             else if (item.quality - (qualityMultiplier * qualityMinus)) > 50 then
               50
             else
@@ -107,6 +111,21 @@ suite =
                ]
              expectedItems =
                 [ Item "Sulfuras" 10 80
+                ]
+          in
+          Expect.equal expectedItems (endOfDay givenItems)
+      , test "\"Backstage passes\", like aged brie, increases in Quality as its SellIn value approaches" <|
+        \_ ->
+          let
+             givenItems =
+               [ Item "Backstage passes" 10 10,
+                 Item "Backstage passes" 5 10,
+                 Item "Backstage passes" 0 10
+               ]
+             expectedItems =
+                [ Item "Backstage passes" 9 12,
+                  Item "Backstage passes" 4 13,
+                  Item "Backstage passes" -1 0
                 ]
           in
           Expect.equal expectedItems (endOfDay givenItems)
