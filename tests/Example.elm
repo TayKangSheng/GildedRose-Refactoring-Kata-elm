@@ -8,6 +8,7 @@ type alias Item =
   { name : String
   , sellIn : Int
   , quality: Int
+  , conjured: Bool
   }
 
 endOfDay : List Item -> List Item
@@ -34,6 +35,8 @@ endOfDay itemList =
               0
             else if (item.quality - (qualityMultiplier * qualityMinus)) > 50 then
               50
+            else if item.conjured then
+              item.quality - 2 * (qualityMultiplier * qualityMinus)
             else
               item.quality - (qualityMultiplier * qualityMinus)
           sellIn =
@@ -43,7 +46,7 @@ endOfDay itemList =
               item.sellIn - 1
         in
 
-        Item item.name sellIn (max 0 newQuality)
+        Item item.name sellIn (max 0 newQuality) item.conjured
       )
       itemList
 
@@ -54,30 +57,30 @@ suite =
       \_ ->
         let
           givenItems =
-            [Item "Thing" 10 10]
+            [Item "Thing" 10 10 False]
           expectedItems =
-            [Item "Thing" 9 9]
+            [Item "Thing" 9 9 False]
         in
         Expect.equal expectedItems (endOfDay givenItems)
     , test "Once the sell by date has passed, Quality degrades twice as fast" <|
       \_ ->
         let
           givenItems =
-            [Item "Thing" 0 10]
+            [Item "Thing" 0 10 False]
           expectedItems =
-            [Item "Thing" -1 8]
+            [Item "Thing" -1 8 False]
         in
         Expect.equal expectedItems (endOfDay givenItems)
     , test "The Quality of an item is never negative" <|
       \_ ->
         let
            givenItems =
-             [ Item "Thing" 10 1
-             , Item "Thing" 10 0
+             [ Item "Thing" 10 1 False
+             , Item "Thing" 10 0 False
              ]
            expectedItems =
-              [ Item "Thing" 9 0
-              , Item "Thing" 9 0
+              [ Item "Thing" 9 0 False
+              , Item "Thing" 9 0 False
               ]
         in
         Expect.equal expectedItems (endOfDay givenItems)
@@ -85,21 +88,21 @@ suite =
         \_ ->
           let
              givenItems =
-               [ Item "Aged Brie" 10 10]
+               [ Item "Aged Brie" 10 10 False]
              expectedItems =
-                [ Item "Aged Brie" 9 11]
+                [ Item "Aged Brie" 9 11 False]
           in
           Expect.equal expectedItems (endOfDay givenItems)
       , test "The Quality of an item is never more than 50" <|
         \_ ->
           let
              givenItems =
-               [ Item "Thing" 10 55
-               , Item "Aged Brie" 10 50
+               [ Item "Thing" 10 55 False
+               , Item "Aged Brie" 10 50 False
                ]
              expectedItems =
-                [ Item "Thing" 9 50
-                , Item "Aged Brie" 9 50
+                [ Item "Thing" 9 50 False
+                , Item "Aged Brie" 9 50 False
                 ]
           in
           Expect.equal expectedItems (endOfDay givenItems)
@@ -107,10 +110,10 @@ suite =
         \_ ->
           let
              givenItems =
-               [ Item "Sulfuras" 10 80
+               [ Item "Sulfuras" 10 80 False
                ]
              expectedItems =
-                [ Item "Sulfuras" 10 80
+                [ Item "Sulfuras" 10 80 False
                 ]
           in
           Expect.equal expectedItems (endOfDay givenItems)
@@ -118,14 +121,31 @@ suite =
         \_ ->
           let
              givenItems =
-               [ Item "Backstage passes" 10 10,
-                 Item "Backstage passes" 5 10,
-                 Item "Backstage passes" 0 10
+               [ Item "Backstage passes" 10 10 False,
+                 Item "Backstage passes" 5 10 False,
+                 Item "Backstage passes" 0 10 False
                ]
              expectedItems =
-                [ Item "Backstage passes" 9 12,
-                  Item "Backstage passes" 4 13,
-                  Item "Backstage passes" -1 0
+                [ Item "Backstage passes" 9 12 False,
+                  Item "Backstage passes" 4 13 False,
+                  Item "Backstage passes" -1 0 False
+                ]
+          in
+          Expect.equal expectedItems (endOfDay givenItems)
+      , test "\"Conjured\" items degrade in Quality twice as fast as normal items" <|
+        \_ ->
+          let
+             givenItems =
+               [ Item "Thing" 10 10 True,
+                 Item "Aged Brie" 10 10 True,
+                 Item "Sulfuras" 10 80 True,
+                 Item "Backstage passes" 10 10 True
+               ]
+             expectedItems =
+                [ Item "Thing" 9 8 True,
+                  Item "Aged Brie" 9 12 True,
+                  Item "Sulfuras" 10 80 True,
+                  Item "Backstage passes" 9 14 True
                 ]
           in
           Expect.equal expectedItems (endOfDay givenItems)

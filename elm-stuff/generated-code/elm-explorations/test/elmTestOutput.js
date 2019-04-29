@@ -2452,9 +2452,9 @@ function _Test_runThunk(thunk)
   }
 }
 var author$project$Console$Text$UseColor = {$: 'UseColor'};
-var author$project$Example$Item = F3(
-	function (name, sellIn, quality) {
-		return {name: name, quality: quality, sellIn: sellIn};
+var author$project$Example$Item = F4(
+	function (name, sellIn, quality, conjured) {
+		return {conjured: conjured, name: name, quality: quality, sellIn: sellIn};
 	});
 var elm$core$Basics$EQ = {$: 'EQ'};
 var elm$core$Basics$GT = {$: 'GT'};
@@ -2649,21 +2649,22 @@ var author$project$Example$endOfDay = function (itemList) {
 			var sellIn = (item.name === 'Sulfuras') ? item.sellIn : (item.sellIn - 1);
 			var qualityMultiplier = ((item.name === 'Aged Brie') || (item.name === 'Backstage passes')) ? (-1) : 1;
 			var qualityMinus = ((item.sellIn <= 5) && (item.name === 'Backstage passes')) ? 3 : (((item.sellIn <= 0) || ((item.sellIn <= 10) && (item.name === 'Backstage passes'))) ? 2 : 1);
-			var newQuality = (item.name === 'Sulfuras') ? 80 : (((item.sellIn <= 0) && (item.name === 'Backstage passes')) ? 0 : (((item.quality - (qualityMultiplier * qualityMinus)) > 50) ? 50 : (item.quality - (qualityMultiplier * qualityMinus))));
-			return A3(
+			var newQuality = (item.name === 'Sulfuras') ? 80 : (((item.sellIn <= 0) && (item.name === 'Backstage passes')) ? 0 : (((item.quality - (qualityMultiplier * qualityMinus)) > 50) ? 50 : (item.conjured ? (item.quality - (2 * (qualityMultiplier * qualityMinus))) : (item.quality - (qualityMultiplier * qualityMinus)))));
+			return A4(
 				author$project$Example$Item,
 				item.name,
 				sellIn,
-				A2(elm$core$Basics$max, 0, newQuality));
+				A2(elm$core$Basics$max, 0, newQuality),
+				item.conjured);
 		},
 		itemList);
 };
+var elm$core$Basics$False = {$: 'False'};
+var elm$core$Basics$True = {$: 'True'};
 var elm$core$Basics$apL = F2(
 	function (f, x) {
 		return f(x);
 	});
-var elm$core$Basics$False = {$: 'False'};
-var elm$core$Basics$True = {$: 'True'};
 var elm$core$Basics$not = _Basics_not;
 var elm$core$Maybe$Just = function (a) {
 	return {$: 'Just', a: a};
@@ -3085,11 +3086,11 @@ var author$project$Example$suite = A2(
 			function (_n0) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 10, 10)
+						A4(author$project$Example$Item, 'Thing', 10, 10, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 9, 9)
+						A4(author$project$Example$Item, 'Thing', 9, 9, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3102,11 +3103,11 @@ var author$project$Example$suite = A2(
 			function (_n1) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 0, 10)
+						A4(author$project$Example$Item, 'Thing', 0, 10, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', -1, 8)
+						A4(author$project$Example$Item, 'Thing', -1, 8, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3119,13 +3120,13 @@ var author$project$Example$suite = A2(
 			function (_n2) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 10, 1),
-						A3(author$project$Example$Item, 'Thing', 10, 0)
+						A4(author$project$Example$Item, 'Thing', 10, 1, false),
+						A4(author$project$Example$Item, 'Thing', 10, 0, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 9, 0),
-						A3(author$project$Example$Item, 'Thing', 9, 0)
+						A4(author$project$Example$Item, 'Thing', 9, 0, false),
+						A4(author$project$Example$Item, 'Thing', 9, 0, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3138,11 +3139,11 @@ var author$project$Example$suite = A2(
 			function (_n3) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Aged Brie', 10, 10)
+						A4(author$project$Example$Item, 'Aged Brie', 10, 10, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Aged Brie', 9, 11)
+						A4(author$project$Example$Item, 'Aged Brie', 9, 11, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3155,13 +3156,13 @@ var author$project$Example$suite = A2(
 			function (_n4) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 10, 55),
-						A3(author$project$Example$Item, 'Aged Brie', 10, 50)
+						A4(author$project$Example$Item, 'Thing', 10, 55, false),
+						A4(author$project$Example$Item, 'Aged Brie', 10, 50, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Thing', 9, 50),
-						A3(author$project$Example$Item, 'Aged Brie', 9, 50)
+						A4(author$project$Example$Item, 'Thing', 9, 50, false),
+						A4(author$project$Example$Item, 'Aged Brie', 9, 50, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3174,11 +3175,11 @@ var author$project$Example$suite = A2(
 			function (_n5) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Sulfuras', 10, 80)
+						A4(author$project$Example$Item, 'Sulfuras', 10, 80, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Sulfuras', 10, 80)
+						A4(author$project$Example$Item, 'Sulfuras', 10, 80, false)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -3191,15 +3192,38 @@ var author$project$Example$suite = A2(
 			function (_n6) {
 				var givenItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Backstage passes', 10, 10),
-						A3(author$project$Example$Item, 'Backstage passes', 5, 10),
-						A3(author$project$Example$Item, 'Backstage passes', 0, 10)
+						A4(author$project$Example$Item, 'Backstage passes', 10, 10, false),
+						A4(author$project$Example$Item, 'Backstage passes', 5, 10, false),
+						A4(author$project$Example$Item, 'Backstage passes', 0, 10, false)
 					]);
 				var expectedItems = _List_fromArray(
 					[
-						A3(author$project$Example$Item, 'Backstage passes', 9, 12),
-						A3(author$project$Example$Item, 'Backstage passes', 4, 13),
-						A3(author$project$Example$Item, 'Backstage passes', -1, 0)
+						A4(author$project$Example$Item, 'Backstage passes', 9, 12, false),
+						A4(author$project$Example$Item, 'Backstage passes', 4, 13, false),
+						A4(author$project$Example$Item, 'Backstage passes', -1, 0, false)
+					]);
+				return A2(
+					elm_explorations$test$Expect$equal,
+					expectedItems,
+					author$project$Example$endOfDay(givenItems));
+			}),
+			A2(
+			elm_explorations$test$Test$test,
+			'\"Conjured\" items degrade in Quality twice as fast as normal items',
+			function (_n7) {
+				var givenItems = _List_fromArray(
+					[
+						A4(author$project$Example$Item, 'Thing', 10, 10, true),
+						A4(author$project$Example$Item, 'Aged Brie', 10, 10, true),
+						A4(author$project$Example$Item, 'Sulfuras', 10, 80, true),
+						A4(author$project$Example$Item, 'Backstage passes', 10, 10, true)
+					]);
+				var expectedItems = _List_fromArray(
+					[
+						A4(author$project$Example$Item, 'Thing', 9, 8, true),
+						A4(author$project$Example$Item, 'Aged Brie', 9, 12, true),
+						A4(author$project$Example$Item, 'Sulfuras', 10, 80, true),
+						A4(author$project$Example$Item, 'Backstage passes', 9, 14, true)
 					]);
 				return A2(
 					elm_explorations$test$Expect$equal,
@@ -6418,7 +6442,7 @@ var elm_explorations$test$Test$concat = function (tests) {
 		}
 	}
 };
-var author$project$Test$Generated$Main477002760$main = A2(
+var author$project$Test$Generated$Main2024821987$main = A2(
 	author$project$Test$Runner$Node$run,
 	{
 		paths: _List_fromArray(
@@ -6426,7 +6450,7 @@ var author$project$Test$Generated$Main477002760$main = A2(
 		processes: 4,
 		report: author$project$Test$Reporter$Reporter$ConsoleReport(author$project$Console$Text$UseColor),
 		runs: elm$core$Maybe$Nothing,
-		seed: 178947340362488
+		seed: 323808698205990
 	},
 	elm_explorations$test$Test$concat(
 		_List_fromArray(
@@ -6437,7 +6461,7 @@ var author$project$Test$Generated$Main477002760$main = A2(
 				_List_fromArray(
 					[author$project$Example$suite]))
 			])));
-_Platform_export({'Test':{'Generated':{'Main477002760':{'init':author$project$Test$Generated$Main477002760$main(elm$json$Json$Decode$int)(0)}}}});}(this));
+_Platform_export({'Test':{'Generated':{'Main2024821987':{'init':author$project$Test$Generated$Main2024821987$main(elm$json$Json$Decode$int)(0)}}}});}(this));
 return this.Elm;
 })({});
 var pipeFilename = "/tmp/elm_test-57771.sock";
